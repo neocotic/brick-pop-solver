@@ -1,0 +1,2 @@
+com.neocotic.brickpopsolver.solution.parallel.ParallelSolutionService
+com.neocotic.brickpopsolver.solution.serial.SerialSolutionService
