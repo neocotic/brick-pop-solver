@@ -28,7 +28,7 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="com.neocotic.brickpopsolver" level="debug" additivity="false">
+        <Logger name="com.neocotic.brickpopsolver" level="info" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
 
