@@ -38,6 +38,10 @@ public final class Point implements Comparable<Point> {
         this.y = y;
     }
 
+    public Point offset(final int xOffset, final int yOffset) {
+        return new Point(x + xOffset, y + yOffset);
+    }
+
     public int getX() {
         return x;
     }

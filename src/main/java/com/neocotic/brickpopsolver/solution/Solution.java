@@ -66,14 +66,12 @@ public final class Solution {
 
         int index = 0;
         final int offset = configuration.getOffset();
-        final Coordinate start = configuration.getStart();
+        final Point start = configuration.getStart();
 
         for (final Coordinate step : steps) {
             index++;
 
-            final int x = start.getColumn() + (offset * step.getColumn());
-            final int y = start.getRow() + (offset * step.getRow());
-            final Point point = new Point(x, y);
+            final Point point = start.offset(offset * step.getColumn(), offset * step.getRow());
 
             LOG.debug("Playing step {}: {}", index, point);
 

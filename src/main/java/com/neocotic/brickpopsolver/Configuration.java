@@ -27,6 +27,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.neocotic.brickpopsolver.device.DeviceService;
+import com.neocotic.brickpopsolver.device.Point;
 import com.neocotic.brickpopsolver.device.android.AndroidDeviceService;
 import com.neocotic.brickpopsolver.image.ImageFormat;
 import com.neocotic.brickpopsolver.image.ImageService;
@@ -43,17 +44,17 @@ public final class Configuration {
     public static final String DEFAULT_IMAGE_SERVICE_NAME = OpenCVImageService.SERVICE_NAME;
     public static final int DEFAULT_OFFSET = 142;
     public static final String DEFAULT_SOLUTION_SERVICE_NAME = ParallelSolutionService.SERVICE_NAME;
-    public static final int DEFAULT_START_ROW = 625;
-    public static final int DEFAULT_START_COLUMN = 70;
+    public static final int DEFAULT_START_X = 70;
+    public static final int DEFAULT_START_Y = 625;
 
     private final DeviceService deviceService;
     private final ImageFormat imageFormat;
     private final ImageService imageService;
     private final int offset;
     private final SolutionService solutionService;
-    private final Coordinate start;
+    private final Point start;
 
-    public Configuration(final DeviceService deviceService, final ImageService imageService, final SolutionService solutionService, final ImageFormat imageFormat, final Integer offset, final Coordinate start) {
+    public Configuration(final DeviceService deviceService, final ImageService imageService, final SolutionService solutionService, final ImageFormat imageFormat, final Integer offset, final Point start) {
         this.deviceService = Objects.requireNonNull(deviceService, "deviceService");
         this.imageService = Objects.requireNonNull(imageService, "imageService");
         this.solutionService = Objects.requireNonNull(solutionService, "solutionService");
@@ -62,13 +63,13 @@ public final class Configuration {
         this.start = Objects.requireNonNull(start, "start");
     }
 
-    public Configuration(final String deviceServiceName, final String imageServiceName, final String solutionServiceName, final String imageFormatName, final Integer offset, final Integer startRow, final Integer startColumn) throws ServiceNotFoundException {
+    public Configuration(final String deviceServiceName, final String imageServiceName, final String solutionServiceName, final String imageFormatName, final Integer offset, final Integer startX, final Integer startY) throws ServiceNotFoundException {
         this.deviceService = ServiceManager.getService(DeviceService.class, deviceServiceName != null ? deviceServiceName : DEFAULT_DEVICE_SERVICE_NAME);
         this.imageService = ServiceManager.getService(ImageService.class, imageServiceName != null ? imageServiceName : DEFAULT_IMAGE_SERVICE_NAME);
         this.solutionService = ServiceManager.getService(SolutionService.class, solutionServiceName != null ? solutionServiceName : DEFAULT_SOLUTION_SERVICE_NAME);
         this.imageFormat = ImageFormat.valueOf(imageFormatName != null ? imageFormatName : DEFAULT_IMAGE_FORMAT_NAME);
         this.offset = offset != null ? offset : DEFAULT_OFFSET;
-        this.start = new Coordinate(startRow != null ? startRow : DEFAULT_START_ROW, startColumn != null ? startColumn : DEFAULT_START_COLUMN);
+        this.start = new Point(startX != null ? startX : DEFAULT_START_X, startY != null ? startY : DEFAULT_START_Y);
     }
 
     public DeviceService getDeviceService() {
@@ -91,7 +92,7 @@ public final class Configuration {
         return solutionService;
     }
 
-    public Coordinate getStart() {
+    public Point getStart() {
         return start;
     }
 

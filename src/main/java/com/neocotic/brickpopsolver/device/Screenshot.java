@@ -55,12 +55,12 @@ public final class Screenshot {
 
         final Map<Coordinate, Color> map = new LinkedHashMap<>();
         final int offset = configuration.getOffset();
-        final Coordinate start = configuration.getStart();
+        final Point start = configuration.getStart();
 
         for (int i = 0; i < Board.GRID_SIZE; i++) {
             for (int j = 0; j < Board.GRID_SIZE; j++) {
-                final int x = start.getRow() + (i * offset);
-                final int y = start.getColumn() + (j * offset);
+                final int x = start.getX() + (j * offset);
+                final int y = start.getY() + (i * offset);
 
                 map.put(new Coordinate(i, j), image.getPixel(x, y));
             }

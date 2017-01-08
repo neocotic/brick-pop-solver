@@ -76,10 +76,10 @@ public final class BrickPopSolver {
         final String solutionServiceName = getProperty("solutionService.name");
         final String imageFormatName = getProperty("imageFormat.name");
         final Integer offset = getIntegerProperty("offset");
-        final Integer startColumn = getIntegerProperty("start.column");
-        final Integer startRow = getIntegerProperty("start.row");
+        final Integer startX = getIntegerProperty("start.x");
+        final Integer startY = getIntegerProperty("start.y");
 
-        configuration = new Configuration(deviceServiceName, imageServiceName, solutionServiceName, imageFormatName, offset, startRow, startColumn);
+        configuration = new Configuration(deviceServiceName, imageServiceName, solutionServiceName, imageFormatName, offset, startX, startY);
     }
 
     public BrickPopSolver(final Configuration configuration) {

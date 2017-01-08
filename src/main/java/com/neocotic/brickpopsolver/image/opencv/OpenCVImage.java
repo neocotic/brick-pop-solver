@@ -62,9 +62,9 @@ public final class OpenCVImage implements Image {
         final UByteIndexer indexer = matrix.createIndexer();
 
         try {
-            final int blue = indexer.get(x, y, 0);
-            final int green = indexer.get(x, y, 1);
-            final int red = indexer.get(x, y, 2);
+            final int blue = indexer.get(y, x, 0);
+            final int green = indexer.get(y, x, 1);
+            final int red = indexer.get(y, x, 2);
 
             return LOG.traceExit(new Color(red, green, blue));
         } finally {
