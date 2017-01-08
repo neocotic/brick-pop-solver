@@ -62,7 +62,7 @@ public final class Solution {
             throw new SolutionException("Solution is empty");
         }
 
-        LOG.debug("Playing solution of {} steps", steps::size);
+        LOG.info("Playing solution of {} steps", steps::size);
 
         int index = 0;
         final int offset = configuration.getOffset();

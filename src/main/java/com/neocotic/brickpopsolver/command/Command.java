@@ -57,7 +57,7 @@ public final class Command {
             arguments.add(String.valueOf(arg));
         }
 
-        LOG.info("Executing command: {}", () -> StringUtils.join(arguments.toArray(), ' '));
+        LOG.debug("Executing command: {}", () -> StringUtils.join(arguments.toArray(), ' '));
 
         try {
             final Process process = new ProcessBuilder(arguments).start();
