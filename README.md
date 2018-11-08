@@ -23,7 +23,6 @@ Once you have all of them installed you just need to do the following:
 ``` bash
 $ git checkout https://github.com/neocotic/brick-pop-solver.git
 $ cd brick-pop-solver
-$ ./gradlew jar
 ```
 
 ## Usage
@@ -35,7 +34,7 @@ Your device **must** be connected (with USB debug mode enabled) and *Brick Pop* 
 ### CLI
 
 ``` bash
-$ java -jar build/libs/brick-pop-solver-0.1.0-SNAPSHOT.jar
+$ ./gradlew run
 ```
 
 It can be further customized by specifying Java properties. Take a look at the source code for `BrickPopSolver.java`.
