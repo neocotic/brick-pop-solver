@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Configuration;
 import com.neocotic.brickpopsolver.command.Command;
@@ -47,9 +47,9 @@ import com.neocotic.brickpopsolver.image.Image;
 import com.neocotic.brickpopsolver.image.ImageException;
 import com.neocotic.brickpopsolver.service.AbstractService;
 
-public class AndroidDeviceService extends AbstractService implements DeviceService {
+public final class AndroidDeviceService extends AbstractService implements DeviceService {
 
-    private static final Logger LOG = LogManager.getLogger(AndroidDeviceService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AndroidDeviceService.class);
 
     public static final String SERVICE_NAME = "android";
 
@@ -59,18 +59,21 @@ public class AndroidDeviceService extends AbstractService implements DeviceServi
 
     @Override
     public Screenshot captureScreenshot(final Path filePath, final Configuration configuration) throws DeviceException {
-        LOG.traceEntry("captureScreenshot(filePath={}, configuration={})", filePath, configuration);
+        logger.trace("captureScreenshot:enter(filePath={}, configuration={})", filePath, configuration);
 
-        LOG.debug("Capturing screenshot from device via ADB and saving to file: {}", filePath);
+        logger.debug("Capturing screenshot from device via ADB and saving to file: {}", filePath);
 
         try (final InputStream input = new BufferedInputStream(adb.run("shell", "screencap", "-p").getInputStream())) {
             Files.write(filePath, IOUtils.toByteArray(input));
 
             final Image image = configuration.getImageService().readImage(filePath, configuration);
 
-            LOG.debug("Screenshot captured in file: {}", filePath);
+            logger.debug("Screenshot captured in file: {}", filePath);
 
-            return LOG.traceExit(new Screenshot(filePath, image));
+            final Screenshot screenshot = new Screenshot(filePath, image);
+
+            logger.trace("captureScreenshot:exit({})", screenshot);
+            return screenshot;
         } catch (CommandException | IOException e) {
             throw new DeviceException("Failed to capture screenshot from ADB", e);
         } catch (ImageException e) {
@@ -80,13 +83,12 @@ public class AndroidDeviceService extends AbstractService implements DeviceServi
 
     @Override
     public Set<String> getDevices(final Configuration configuration) throws DeviceException {
-        LOG.traceEntry("getDevices(configuration={})", configuration);
+        logger.trace("getDevices:enter(configuration={})", configuration);
 
-        LOG.debug("Reading devices from ADB");
+        logger.debug("Reading devices from ADB");
 
         try (final InputStream input = adb.run("devices").getInputStream()) {
-            @SuppressWarnings("unchecked")
-            final List<String> lines = IOUtils.readLines(input);
+            @SuppressWarnings("unchecked") final List<String> lines = IOUtils.readLines(input);
             lines.remove(0);
             final Set<String> devices = lines.stream()
                 .map(line -> {
@@ -96,9 +98,10 @@ public class AndroidDeviceService extends AbstractService implements DeviceServi
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toSet());
 
-            LOG.debug("Connected devices found: {}", devices);
+            logger.debug("Connected devices found: {}", devices);
 
-            return LOG.traceExit(devices);
+            logger.trace("getDevices:exit({})", devices);
+            return devices;
         } catch (CommandException | IOException e) {
             throw new DeviceException("Failed to read devices from ADB", e);
         }
@@ -111,20 +114,20 @@ public class AndroidDeviceService extends AbstractService implements DeviceServi
 
     @Override
     public void triggerPoint(final Point point, final Configuration configuration) throws DeviceException {
-        LOG.traceEntry("triggerPoint(point={}, configuration={})", point, configuration);
+        logger.trace("triggerPoint:enter(point={}, configuration={})", point, configuration);
 
-        LOG.debug("Triggering tap on device at {} via ADB", point);
+        logger.debug("Triggering tap on device at {} via ADB", point);
 
         try {
             adb.run("shell", "input", "tap", point.getX(), point.getY()).verify();
 
             Thread.sleep(1200);
         } catch (CommandException e) {
-            throw new DeviceException("", e);
+            throw new DeviceException("Failed to trigger point using ADB", e);
         } catch (InterruptedException e) {
-            throw new DeviceException("Interrupted after triggering point: " + point, e);
+            throw new DeviceException(String.format("Interrupted after triggering point: %s", point), e);
         }
 
-        LOG.traceExit();
+        logger.trace("triggerPoint:exit()");
     }
 }

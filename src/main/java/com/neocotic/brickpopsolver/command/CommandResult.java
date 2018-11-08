@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +26,12 @@ import java.io.InputStream;
 import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class CommandResult {
 
-    private static final Logger LOG = LogManager.getLogger(CommandResult.class);
+    private static final Logger logger = LoggerFactory.getLogger(CommandResult.class);
 
     private final Command command;
     private final Process process;
@@ -42,7 +42,7 @@ public final class CommandResult {
     }
 
     public void verify() throws CommandException {
-        LOG.traceEntry();
+        logger.trace("verify:enter()");
 
         try {
             final int exitValue = process.waitFor();
@@ -53,7 +53,7 @@ public final class CommandResult {
             throw new CommandException(String.format("%s command failed", command), e);
         }
 
-        LOG.traceExit();
+        logger.trace("verify:exit()");
     }
 
     public Command getCommand() {

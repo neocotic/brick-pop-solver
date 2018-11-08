@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +22,20 @@
 package com.neocotic.brickpopsolver.service;
 
 import java.util.ServiceLoader;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ServiceManager {
 
-    private static final Logger LOG = LogManager.getLogger(ServiceManager.class);
+    private static final Logger logger = LoggerFactory.getLogger(ServiceManager.class);
 
     public static <S extends Service> S getService(final Class<S> type, final String name) throws ServiceNotFoundException {
-        LOG.traceEntry("getService(type={}, name={})", type, name);
+        logger.trace("getService:enter(type={}, name={})", type, name);
 
         for (final S service : ServiceLoader.load(type)) {
             if (service.getServiceName().equals(name)) {
-                return LOG.traceExit(service);
+                logger.trace("getService:exit({})", service);
+                return service;
             }
         }
 

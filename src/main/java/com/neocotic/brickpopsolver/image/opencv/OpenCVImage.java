@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,10 +22,10 @@
 package com.neocotic.brickpopsolver.image.opencv;
 
 import java.util.Objects;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bytedeco.javacpp.indexer.UByteIndexer;
 import org.bytedeco.javacpp.opencv_core.Mat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Color;
 import com.neocotic.brickpopsolver.image.Image;
@@ -33,7 +33,7 @@ import com.neocotic.brickpopsolver.image.ImageFormat;
 
 public final class OpenCVImage implements Image {
 
-    private static final Logger LOG = LogManager.getLogger(OpenCVImage.class);
+    private static final Logger logger = LoggerFactory.getLogger(OpenCVImage.class);
 
     private static final Color BLACK = new Color(0, 0, 0);
 
@@ -57,7 +57,7 @@ public final class OpenCVImage implements Image {
 
     @Override
     public Color getPixel(final int x, final int y) {
-        LOG.traceEntry("getPixel(x={}, y={})", x, y);
+        logger.trace("getPixel:enter(x={}, y={})", x, y);
 
         final UByteIndexer indexer = matrix.createIndexer();
 
@@ -65,8 +65,10 @@ public final class OpenCVImage implements Image {
             final int blue = indexer.get(y, x, 0);
             final int green = indexer.get(y, x, 1);
             final int red = indexer.get(y, x, 2);
+            final Color color = new Color(red, green, blue);
 
-            return LOG.traceExit(new Color(red, green, blue));
+            logger.trace("getPixel:exit(color)");
+            return color;
         } finally {
             indexer.release();
         }

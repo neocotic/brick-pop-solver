@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ import java.util.Objects;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Configuration;
 import com.neocotic.brickpopsolver.Coordinate;
@@ -37,7 +37,7 @@ import com.neocotic.brickpopsolver.device.Point;
 
 public final class Solution {
 
-    private static final Logger LOG = LogManager.getLogger(Solution.class);
+    private static final Logger logger = LoggerFactory.getLogger(Solution.class);
 
     private final Configuration configuration;
     private final List<Coordinate> steps;
@@ -56,13 +56,15 @@ public final class Solution {
     }
 
     public Solution play() throws SolutionException {
-        LOG.traceEntry();
+        logger.trace("play:enter()");
 
         if (isEmpty()) {
             throw new SolutionException("Solution is empty");
         }
 
-        LOG.info("Playing solution of {} steps", steps::size);
+        if (logger.isInfoEnabled()) {
+            logger.info("Playing solution of {} steps", steps.size());
+        }
 
         int index = 0;
         final int offset = configuration.getOffset();
@@ -73,7 +75,7 @@ public final class Solution {
 
             final Point point = start.offset(offset * step.getColumn(), offset * step.getRow());
 
-            LOG.debug("Playing step {}: {}", index, point);
+            logger.debug("Playing step {}: {}", index, point);
 
             try {
                 configuration.getDeviceService().triggerPoint(point, configuration);
@@ -82,7 +84,8 @@ public final class Solution {
             }
         }
 
-        return LOG.traceExit(this);
+        logger.trace("play:exit({})", this);
+        return this;
     }
 
     public List<Coordinate> getSteps() {

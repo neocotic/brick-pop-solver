@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,30 +23,29 @@ package com.neocotic.brickpopsolver.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.CustomToStringStyle;
 
 public final class Command {
 
-    private static final Logger LOG = LogManager.getLogger(Command.class);
+    private static final Logger logger = LoggerFactory.getLogger(Command.class);
 
     private final String command;
 
     public Command(final String command) {
         this.command = Objects.requireNonNull(command, "command");
 
-        LOG.debug("Command created with command: {}", command);
+        logger.debug("Command created with command: {}", command);
     }
 
     public CommandResult run(Object... args) throws CommandException {
-        LOG.traceEntry("run(args={})", new Object[]{args});
+        logger.trace("run:enter(args={})", new Object[]{args});
 
         args = args != null ? args : new Object[0];
 
@@ -57,13 +56,18 @@ public final class Command {
             arguments.add(String.valueOf(arg));
         }
 
-        LOG.debug("Executing command: {}", () -> StringUtils.join(arguments.toArray(), ' '));
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing command: {}", String.join(" ", arguments));
+        }
 
         try {
             final Process process = new ProcessBuilder(arguments).start();
-            return LOG.traceExit(new CommandResult(this, process));
+            final CommandResult result = new CommandResult(this, process);
+
+            logger.trace("run:exit({})", result);
+            return result;
         } catch (IOException e) {
-            throw new CommandException(String.format("%s command failed to execute with args: %s", command, ArrayUtils.toString(args)), e);
+            throw new CommandException(String.format("%s command failed to execute with args: %s", command, Arrays.toString(args)), e);
         }
     }
 

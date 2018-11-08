@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ import java.util.Comparator;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,16 +40,40 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.neocotic.brickpopsolver.device.Point;
+import com.neocotic.brickpopsolver.device.Screenshot;
 
 public final class Board {
 
-    private static final Logger LOG = LogManager.getLogger(Board.class);
+    private static final Logger logger = LoggerFactory.getLogger(Board.class);
 
-    public static final int GRID_SIZE = 10;
-
+    private static final int GRID_SIZE = 10;
     private static final Coordinate[] NEIGHBORS = {new Coordinate(-1, 0), new Coordinate(0, 1), new Coordinate(1, 0), new Coordinate(0, -1)};
+
+    public static Board fromScreenshot(final Screenshot screenshot, final Configuration configuration) {
+        logger.trace("fromScreenshot:enter(screenshot={}, configuration={})", screenshot, configuration);
+
+        final Map<Coordinate, Color> map = new LinkedHashMap<>();
+        final int offset = configuration.getOffset();
+        final Point start = configuration.getStart();
+
+        for (int i = 0; i < Board.GRID_SIZE; i++) {
+            for (int j = 0; j < Board.GRID_SIZE; j++) {
+                final int x = start.getX() + (j * offset);
+                final int y = start.getY() + (i * offset);
+
+                map.put(new Coordinate(i, j), screenshot.getImage().getPixel(x, y));
+            }
+        }
+
+        final Board board = new Board(map);
+
+        logger.trace("fromScreenshot:exit({})", board);
+        return board;
+    }
 
     private final Color[][] grid;
 
@@ -83,7 +108,7 @@ public final class Board {
     }
 
     public List<Move> getAvailableMoves() {
-        LOG.traceEntry();
+        logger.trace("getAvailableMoves:enter()");
 
         final List<Move> moves = new ArrayList<>();
         final Set<Board> pools = new HashSet<>();
@@ -104,7 +129,8 @@ public final class Board {
             }
         }
 
-        return LOG.traceExit(moves);
+        logger.trace("getAvailableMoves:exit({})", moves);
+        return moves;
     }
 
     public Color getColor(final Coordinate coordinate) {

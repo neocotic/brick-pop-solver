@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ public abstract class CustomToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        LongToStringStyle() {
+        private LongToStringStyle() {
             super();
 
             setContentStart("(");
@@ -53,7 +53,7 @@ public abstract class CustomToStringStyle extends ToStringStyle {
 
         private static final long serialVersionUID = 1L;
 
-        ShortToStringStyle() {
+        private ShortToStringStyle() {
             super();
 
             setContentStart("(");
@@ -68,7 +68,7 @@ public abstract class CustomToStringStyle extends ToStringStyle {
         }
     }
 
-    protected CustomToStringStyle() {
+    private CustomToStringStyle() {
         super();
     }
 }

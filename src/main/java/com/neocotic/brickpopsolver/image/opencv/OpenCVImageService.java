@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,9 +22,9 @@
 package com.neocotic.brickpopsolver.image.opencv;
 
 import java.nio.file.Path;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bytedeco.javacpp.opencv_imgcodecs;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Configuration;
 import com.neocotic.brickpopsolver.image.Image;
@@ -32,9 +32,9 @@ import com.neocotic.brickpopsolver.image.ImageException;
 import com.neocotic.brickpopsolver.image.ImageService;
 import com.neocotic.brickpopsolver.service.AbstractService;
 
-public class OpenCVImageService extends AbstractService implements ImageService {
+public final class OpenCVImageService extends AbstractService implements ImageService {
 
-    private static final Logger LOG = LogManager.getLogger(OpenCVImageService.class);
+    private static final Logger logger = LoggerFactory.getLogger(OpenCVImageService.class);
 
     public static final String SERVICE_NAME = "opencv";
 
@@ -45,17 +45,18 @@ public class OpenCVImageService extends AbstractService implements ImageService 
 
     @Override
     public Image readImage(final Path filePath, final Configuration configuration) throws ImageException {
-        LOG.traceEntry("readImage(filePath={}, configuration={})", filePath, configuration);
+        logger.trace("readImage:enter(filePath={}, configuration={})", filePath, configuration);
 
-        LOG.debug("Reading image from file: {}", filePath);
+        logger.debug("Reading image from file: {}", filePath);
 
         final Image image = new OpenCVImage(configuration.getImageFormat(), opencv_imgcodecs.imread(filePath.toAbsolutePath().toString()));
         if (!image.isValid()) {
             throw new ImageException("Image is not valid: " + filePath);
         }
 
-        LOG.debug("Valid image read from file: {}", filePath);
+        logger.debug("Valid image read from file: {}", filePath);
 
-        return LOG.traceExit(image);
+        logger.trace("readImage:exit({})", image);
+        return image;
     }
 }

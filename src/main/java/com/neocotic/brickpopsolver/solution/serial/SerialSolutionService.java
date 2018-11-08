@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,8 @@
  */
 package com.neocotic.brickpopsolver.solution.serial;
 
-import org.apache.commons.lang3.SystemUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Board;
 import com.neocotic.brickpopsolver.Configuration;
@@ -34,9 +33,9 @@ import com.neocotic.brickpopsolver.solution.SolutionException;
 import com.neocotic.brickpopsolver.solution.SolutionSearch;
 import com.neocotic.brickpopsolver.solution.SolutionService;
 
-public class SerialSolutionService extends AbstractService implements SolutionService {
+public final class SerialSolutionService extends AbstractService implements SolutionService {
 
-    private static final Logger LOG = LogManager.getLogger(SerialSolutionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(SerialSolutionService.class);
 
     public static final String SERVICE_NAME = "serial";
 
@@ -47,24 +46,28 @@ public class SerialSolutionService extends AbstractService implements SolutionSe
 
     @Override
     public Solution solve(final Board board, final Configuration configuration) throws SolutionException {
-        LOG.traceEntry("solve(board={}, configuration={})", board, configuration);
+        logger.trace("solve:enter(board={}, configuration={})", board, configuration);
 
-        LOG.debug("Attempting serial solve for board:{}{}", SystemUtils.LINE_SEPARATOR, board);
+        logger.debug("Attempting to solve board:{}{}", System.lineSeparator(), board);
 
         for (final Move move : board.getAvailableMoves()) {
             try {
                 final Solution solution = new SolutionSearch(configuration, move).search();
 
-                LOG.debug("Found solution:{}{}", SystemUtils.LINE_SEPARATOR, solution);
+                logger.debug("Found solution:{}{}", System.lineSeparator(), solution);
 
-                return LOG.traceExit(solution);
+                logger.trace("solve:exit({})", solution);
+                return solution;
             } catch (SolutionException e) {
                 // Ignore failed solution
             }
         }
 
-        LOG.debug("No solution found");
+        logger.warn("No solution found");
 
-        return LOG.traceExit(new Solution(configuration));
+        final Solution solution = new Solution(configuration);
+
+        logger.trace("solve:exit({})", solution);
+        return solution;
     }
 }

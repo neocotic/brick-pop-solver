@@ -1,6 +1,6 @@
 # Brick Pop Solver
 
-A Java-powered solver for the *Brick Pop* facebook messenger game.
+A Java-powered solver for the *Brick Pop* Facebook Messenger game.
 
 [![License](https://img.shields.io/github/license/neocotic/brick-pop-solver.svg?style=flat-square)](https://github.com/neocotic/brick-pop-solver/blob/master/LICENSE.md)
 
@@ -16,14 +16,14 @@ In order to install this tool you will need the following prerequisites:
 
 * [Git](https://git-scm.com)
 * [Java 8+](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
-* [Maven](https://maven.apache.org)
+* [Gradle](https://gradle.org)
 
 Once you have all of them installed you just need to do the following:
 
 ``` bash
 $ git checkout https://github.com/neocotic/brick-pop-solver.git
 $ cd brick-pop-solver
-$ mvn package
+$ ./gradlew jar
 ```
 
 ## Usage
@@ -35,7 +35,7 @@ Your device **must** be connected (with USB debug mode enabled) and *Brick Pop* 
 ### CLI
 
 ``` bash
-$ java -jar target/brick-pop-solver-0.1.0-SNAPSHOT-bundle.jar
+$ java -jar build/libs/brick-pop-solver-0.1.0-SNAPSHOT.jar
 ```
 
 It can be further customized by specifying Java properties. Take a look at the source code for `BrickPopSolver.java`.
@@ -61,8 +61,9 @@ Currently, only Android devices are supported and you will need to have the
 Bridge (`adb`) to communicate with the device. This means that you'll need to have `/path/to/android-sdk/platform-tools`
 in your `PATH` environment variable so that it is discoverable.
 
-This tool has only been tested on a Google Nexus 6P so the default configurations match this. The offset and starting
-point may need to be changed to match the screen resolution of your device.
+This tool has only been tested on a OnePlus 5 so the default configurations match this. The offset and starting point
+may need to be changed to match the screen resolution of your device. Eventually, I'd like to have automatic detection
+of the grid to avoid manually determining and inputting these values.
 
 ## Bugs
 
@@ -70,6 +71,8 @@ If you have any problems with this tool or would like to see changes currently i
 [here](https://github.com/neocotic/brick-pop-solver/issues).
 
 ## License
+
+Copyright © 2018 Alasdair Mercer
 
 See [LICENSE.md](https://github.com/neocotic/brick-pop-solver/raw/master/LICENSE.md) for more information on our MIT
 license.

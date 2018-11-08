@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -42,10 +42,10 @@ public final class Configuration {
     public static final String DEFAULT_DEVICE_SERVICE_NAME = AndroidDeviceService.SERVICE_NAME;
     public static final String DEFAULT_IMAGE_FORMAT_NAME = ImageFormat.PNG.name();
     public static final String DEFAULT_IMAGE_SERVICE_NAME = OpenCVImageService.SERVICE_NAME;
-    public static final int DEFAULT_OFFSET = 142;
+    public static final int DEFAULT_OFFSET = 102;
     public static final String DEFAULT_SOLUTION_SERVICE_NAME = ParallelSolutionService.SERVICE_NAME;
-    public static final int DEFAULT_START_X = 70;
-    public static final int DEFAULT_START_Y = 625;
+    public static final int DEFAULT_START_X = 86;
+    public static final int DEFAULT_START_Y = 485;
 
     private final DeviceService deviceService;
     private final ImageFormat imageFormat;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,8 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.Configuration;
 import com.neocotic.brickpopsolver.Coordinate;
@@ -35,7 +35,7 @@ import com.neocotic.brickpopsolver.Move;
 
 public final class SolutionSearch implements Callable<Solution> {
 
-    private static final Logger LOG = LogManager.getLogger(SolutionSearch.class);
+    private static final Logger logger = LoggerFactory.getLogger(SolutionSearch.class);
 
     private final Configuration configuration;
     private final Move move;
@@ -52,15 +52,16 @@ public final class SolutionSearch implements Callable<Solution> {
     }
 
     public Solution search() throws SolutionException {
-        LOG.traceEntry();
+        logger.trace("search:enter()");
 
         search(Collections.singletonList(move), Collections.emptyList());
 
         if (solution == null) {
-            throw new SolutionException("Could not solve move: " + move);
+            throw new SolutionException(String.format("Could not solve move: %s", move));
         }
 
-        return LOG.traceExit(solution);
+        logger.trace("search:exit({})", solution);
+        return solution;
     }
 
     private void search(final List<Move> moves, final List<Coordinate> steps) {

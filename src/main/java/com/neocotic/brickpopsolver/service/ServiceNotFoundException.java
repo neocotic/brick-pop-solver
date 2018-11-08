@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@ package com.neocotic.brickpopsolver.service;
 
 import com.neocotic.brickpopsolver.BrickPopSolverException;
 
-public class ServiceNotFoundException extends BrickPopSolverException {
+public final class ServiceNotFoundException extends BrickPopSolverException {
 
     public ServiceNotFoundException(final Class<? extends Service> type, final String name) {
         super(String.format("Unable to find service (%s) with name: %s", type, name));

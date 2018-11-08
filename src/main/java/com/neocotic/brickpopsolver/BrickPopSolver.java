@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Alasdair Mercer
+ * Copyright (C) 2018 Alasdair Mercer
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,11 +30,10 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.Set;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.neocotic.brickpopsolver.device.DeviceService;
 import com.neocotic.brickpopsolver.device.Screenshot;
@@ -46,17 +45,21 @@ import com.neocotic.brickpopsolver.solution.SolutionService;
 
 public final class BrickPopSolver {
 
-    private static final Logger LOG = LogManager.getLogger(BrickPopSolver.class);
+    private static final Logger logger = LoggerFactory.getLogger(BrickPopSolver.class);
 
     private static final String PROPERTY_PREFIX = "brickpopsolver.";
 
     public static void main(final String[] args) throws Exception {
+        logger.trace("main:enter(args={})", new Object[]{args});
+
         final BrickPopSolver solver = new BrickPopSolver();
         if (ArrayUtils.isEmpty(args)) {
             solver.solve().play();
         } else {
             solver.solve(Paths.get(args[0]));
         }
+
+        logger.trace("main:exit()");
     }
 
     private static Integer getIntegerProperty(final String key) {
@@ -85,43 +88,51 @@ public final class BrickPopSolver {
     public BrickPopSolver(final Configuration configuration) {
         this.configuration = Objects.requireNonNull(configuration, "configuration");
 
-        LOG.debug("BrickPopSolver created with configuration:{}{}", SystemUtils.LINE_SEPARATOR, configuration);
+        logger.debug("BrickPopSolver created with configuration:{}{}", System.lineSeparator(), configuration);
     }
 
     public Solution solve() throws BrickPopSolverException {
-        LOG.traceEntry();
+        logger.trace("solve:enter()");
 
         final DeviceService deviceService = configuration.getDeviceService();
         final Set<String> devices = deviceService.getDevices(configuration);
 
-        LOG.info("{} connected devices found", devices::size);
+        if (logger.isInfoEnabled()) {
+            logger.info("{} connected devices found", devices.size());
+        }
 
         final Screenshot screenshot = deviceService.captureScreenshot(createScreenshotFile(), configuration);
 
-        LOG.info("Captured screenshot from device: {}", screenshot);
+        logger.info("Captured screenshot from device: {}", screenshot);
 
-        return LOG.traceExit(solve(screenshot));
+        final Solution solution = solve(screenshot);
+
+        logger.trace("solve:exit({})", solution);
+        return solution;
     }
 
     public Solution solve(final Path filePath) throws BrickPopSolverException {
-        LOG.traceEntry("solve(filePath={})", filePath);
+        logger.trace("solve:enter(filePath={})", filePath);
 
         Objects.requireNonNull(filePath, "filePath");
 
         final ImageService imageService = configuration.getImageService();
         final Screenshot screenshot = new Screenshot(filePath, imageService.readImage(filePath, configuration));
 
-        LOG.info("Read screenshot from file: {}", filePath);
+        logger.info("Read screenshot from file: {}", filePath);
 
-        return LOG.traceExit(solve(screenshot));
+        final Solution solution = solve(screenshot);
+
+        logger.trace("solve:exit({})", solution);
+        return solution;
     }
 
     public Solution solve(final Board board) throws BrickPopSolverException {
-        LOG.traceEntry("solve(board={})", board);
+        logger.trace("solve:enter(board={})", board);
 
         Objects.requireNonNull(board, "board");
 
-        LOG.info("Solving board: {}", board);
+        logger.info("Solving board:{}{}", System.lineSeparator(), board);
 
         final SolutionService solutionService = configuration.getSolutionService();
         final Instant start = Instant.now();
@@ -132,9 +143,12 @@ public final class BrickPopSolver {
             throw new SolutionException("No solution could be found");
         }
 
-        LOG.info("Found a solution in {} seconds:{}{}", () -> Duration.between(start, end).getSeconds(), () -> SystemUtils.LINE_SEPARATOR, () -> solution);
+        if (logger.isInfoEnabled()) {
+            logger.info("Found a solution in {} seconds:{}{}", Duration.between(start, end).getSeconds(), System.lineSeparator(), solution);
+        }
 
-        return LOG.traceExit(solution);
+        logger.trace("solve:exit({})", solution);
+        return solution;
     }
 
     private Path createScreenshotFile() throws BrickPopSolverException {
@@ -146,13 +160,13 @@ public final class BrickPopSolver {
             throw new BrickPopSolverException("Failed to create temporary file for screenshot", e);
         }
 
-        LOG.debug("Created temporary file for screenshot: {}", tempFile);
+        logger.debug("Created temporary file for screenshot: {}", tempFile);
 
         return tempFile.toPath();
     }
 
     private Solution solve(final Screenshot screenshot) throws BrickPopSolverException {
-        return solve(screenshot.createBoard(configuration));
+        return solve(Board.fromScreenshot(screenshot, configuration));
     }
 
     public Configuration getConfiguration() {
